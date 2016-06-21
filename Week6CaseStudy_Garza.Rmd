@@ -2,7 +2,9 @@
 title: "Analysis of 2016 GDP Data: A Case Study"
 author: "Tony Garza"
 date: "June 20, 2016"
-output: html_document
+output: 
+  html_document:
+    keep_md: TRUE
 ---
 
 ```{r setup, include=FALSE}
@@ -24,7 +26,7 @@ Additionally, this R Markdown document will break down my processes for data gat
 
 # Data Gathering Phase
 ```{r}
-setwd("~/Dropbox/SMUDataScienceClass/Week6CaseStudy") # all important step of setting the working directory
+setwd("~/Dropbox/SMUDataScienceClass/1st class/Week6CaseStudy_Garza") # all important step of setting the working directory
 site1 <- "https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FGDP.csv" # site1 houses the GDP data
 download.file(site1, destfile = "./GDP.csv") # store it in GDP data into GDP.csv
 site2 <- "https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FEDSTATS_Country.csv" # site2 houses the EdStats data
@@ -104,8 +106,8 @@ MergeGDPData <- na.omit(MergeGDPData) #elimnate rows where there are NAs
 Actually sorting by the rank column in ascending order would put the United States first with a rank of "1". To make USA last it makes more sense to sort on GDPinDollars column:
 ```{r}
 require(dplyr) #dplyr required for arrange function
-MergeGDPData <- arrange(MergeGDPData,GDPinDollars)
-MergeGDPData
+MergeGDPData <- arrange(MergeGDPData,GDPinDollars) #this arranges the data in ascending order
+MergeGDPData #display merged data
 ```
 Now to determine what the 13th country is I use the following simple code:
 ```{r}
@@ -138,7 +140,9 @@ As you can see in the histogram, the GDP data for all the countries is heavily s
 
 qplot(rank,GDPinDollars, data = MergeGDPData, color=Income.Group) #qplot of rank v GDPinDollars colored by Income.Group category
 ```
-The qplot shows an almost exponential curve with very few countries with high GDPs.
+<br\>
+
+The qplot shows an almost exponential curve with very few countries with high GDPs. It also shows some interesting data that some of the upper middle income countries are also some of the lowest ranking GDP producers. Conversersely, there are also a number of lower middle income countries that are high (or very high) GDP producers. 
 ```{r}
 sum(MergeGDPData$GDPinDollars[1:94])
 sum(MergeGDPData$GDPinDollars[95:99])
@@ -157,3 +161,7 @@ dcast(MergeGDPData, quantile ~ Income.Group, length, value.var = "quantile")[, c
     "Lower middle income")] #create a table of quantile group vs Lower middle income from Income.Group
 dcast(MergeGDPData, quantile ~ Income.Group, length, value.var = "quantile")[1, c("Lower middle income")] #calculate how many Lower Middle Income countries are also in top 38 countries in GDP.
 ```
+There are a total of three Lower middle income countries that are also in the top 38 countries in GDP.
+
+# Conclusion
+In this case study we learned the severe difference between the production of the top highest producing countries in the world versus the production of the remainder of the world's countries. I gathered the most recent GDP data from the World Bank website along with data on household income. I then merged the two data sets to be able to gather additional insights and manipulate the data easier. I found that not only is the data severely skewed (as evident by the above histogram and qplot, it is almost exponential in the severity of its curve. The data was not ready to be used right away and this required me to condense and tidy the data. This included identifying and removing NAs, Making sure data was numerical (sometimes looked numerical but was really a character string), and condensing the data. I also removed extraneous rows, and renamed column names to match and assist in merging of data on a common variable. When these tidying tasks were complete I moved on to the analysis where I prepared the data for each analysis question asked. Here I used a combination of merge, ggplot, and quantile functions to come to assist in drawing conclusions about the data.
